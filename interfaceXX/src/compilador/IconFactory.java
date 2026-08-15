@@ -9,11 +9,6 @@ import java.awt.geom.Path2D;
 
 import javax.swing.ImageIcon;
 
-/**
- * Gera ícones simples (vetoriais) em tempo de execução para os botões da
- * barra de ferramentas, evitando a necessidade de arquivos de imagem
- * externos dentro do .jar.
- */
 final class IconFactory {
 
 	private static final int SIZE = 22;
