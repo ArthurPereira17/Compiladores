@@ -15,11 +15,13 @@ import javax.swing.ImageIcon;
 
 /**
  * Factory for creating toolbar icons programmatically.
- * Generates 22x22 pixel icons with high visibility.
+ * Generates high-visibility 22x22 pixel icons for all toolbar buttons.
  */
 final class IconFactory {
 
 	private static final int SIZE = 22;
+	private static final int PADDING = 2; // Padding inside the icon
+	private static final int INNER_SIZE = SIZE - (2 * PADDING); // 18x18 drawing area
 
 	private IconFactory() {
 	}
@@ -28,7 +30,7 @@ final class IconFactory {
 		BufferedImage img = new BufferedImage(SIZE, SIZE, BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g = img.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setStroke(new BasicStroke(1.8f));
+		g.setStroke(new BasicStroke(2.0f)); // Bolder stroke for better visibility
 
 		String chave = tipo == null ? "" : tipo.trim().toLowerCase();
 
@@ -58,232 +60,256 @@ final class IconFactory {
 			drawTeamIcon(g);
 			break;
 		default:
-			// Default icon - a question mark in a box
-			g.setColor(Color.DARK_GRAY);
-			g.draw(new Rectangle2D.Double(2, 2, 18, 18));
+			// Default icon - a question mark in a box with high contrast
 			g.setColor(Color.BLACK);
-			g.drawString("?", 10, 16);
+			g.draw(new Rectangle2D.Double(PADDING, PADDING, INNER_SIZE, INNER_SIZE));
+			g.setColor(Color.WHITE);
+			g.fill(new Rectangle2D.Double(PADDING + 1, PADDING + 1, INNER_SIZE - 2, INNER_SIZE - 2));
+			g.setColor(Color.BLACK);
+			g.drawString("?", PADDING + 6, PADDING + 12);
 		}
 		g.dispose();
 		return new ImageIcon(img);
 	}
 
 	/**
-	 * Draws a "new file" icon: a simple document with a plus.
+	 * Draws a "new file" icon: a document with a prominent plus sign.
 	 */
 	private static void drawNewIcon(Graphics2D g) {
-		// White document with blue border
+		// White document with thick blue border
 		g.setColor(Color.WHITE);
-		g.fill(new RoundRectangle2D.Double(3, 3, 16, 16, 2, 2));
-		g.setColor(new Color(0, 100, 200));
-		g.draw(new RoundRectangle2D.Double(3, 3, 16, 16, 2, 2));
+		g.fill(new RoundRectangle2D.Double(PADDING, PADDING, INNER_SIZE, INNER_SIZE, 3, 3));
+		g.setColor(new Color(0, 80, 180)); // Darker blue for better contrast
+		g.draw(new RoundRectangle2D.Double(PADDING, PADDING, INNER_SIZE, INNER_SIZE, 3, 3));
 
-		// Plus sign
-		g.setColor(new Color(0, 100, 200));
-		g.draw(new Line2D.Double(9, 7, 9, 15));   // Vertical
-		g.draw(new Line2D.Double(7, 11, 11, 11)); // Horizontal
+		// Plus sign - thicker and more prominent
+		g.setColor(new Color(0, 80, 180));
+		int centerX = PADDING + INNER_SIZE / 2;
+		int centerY = PADDING + INNER_SIZE / 2;
+		int plusSize = 4;
+		g.draw(new Line2D.Double(centerX, centerY - plusSize, centerX, centerY + plusSize));   // Vertical
+		g.draw(new Line2D.Double(centerX - plusSize, centerY, centerX + plusSize, centerY)); // Horizontal
 	}
 
 	/**
-	 * Draws an "open file" icon: a simple folder.
+	 * Draws an "open file" icon: a folder with clear tab and document.
 	 */
 	private static void drawOpenIcon(Graphics2D g) {
-		// Folder tab
-		g.setColor(new Color(200, 150, 50));
-		g.fill(new Rectangle2D.Double(4, 4, 12, 6));
+		// Folder tab - more prominent
+		g.setColor(new Color(220, 140, 40)); // Brighter orange
+		g.fill(new Rectangle2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, 5));
 
 		// Folder body
-		g.setColor(new Color(200, 150, 50));
-		g.fill(new RoundRectangle2D.Double(4, 8, 14, 12, 2, 2));
+		g.setColor(new Color(220, 140, 40));
+		g.fill(new RoundRectangle2D.Double(PADDING + 2, PADDING + 6, INNER_SIZE - 4, INNER_SIZE - 8, 2, 2));
 
 		// Folder border
-		g.setColor(new Color(150, 100, 0));
-		g.draw(new Rectangle2D.Double(4, 4, 12, 6));
-		g.draw(new RoundRectangle2D.Double(4, 8, 14, 12, 2, 2));
+		g.setColor(new Color(180, 100, 0)); // Darker orange for border
+		g.draw(new Rectangle2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, 5));
+		g.draw(new RoundRectangle2D.Double(PADDING + 2, PADDING + 6, INNER_SIZE - 4, INNER_SIZE - 8, 2, 2));
 
-		// Document inside
+		// Document inside - more visible
 		g.setColor(Color.WHITE);
-		g.fill(new Rectangle2D.Double(7, 10, 8, 8));
-		g.setColor(new Color(150, 100, 0));
-		g.draw(new Rectangle2D.Double(7, 10, 8, 8));
-		g.drawLine(9, 12, 11, 12);
-		g.drawLine(9, 14, 11, 14);
+		g.fill(new Rectangle2D.Double(PADDING + 5, PADDING + 9, INNER_SIZE - 8, INNER_SIZE - 11));
+		g.setColor(new Color(180, 100, 0));
+		g.draw(new Rectangle2D.Double(PADDING + 5, PADDING + 9, INNER_SIZE - 8, INNER_SIZE - 11));
+		g.drawLine(PADDING + 7, PADDING + 11, PADDING + INNER_SIZE - 7, PADDING + 11);
+		g.drawLine(PADDING + 7, PADDING + 13, PADDING + INNER_SIZE - 7, PADDING + 13);
 	}
 
 	/**
-	 * Draws a "save file" icon: a floppy disk.
+	 * Draws a "save file" icon: a classic floppy disk with clear details.
 	 */
 	private static void drawSaveIcon(Graphics2D g) {
 		// Disk body
 		g.setColor(Color.WHITE);
-		g.fill(new RoundRectangle2D.Double(4, 4, 14, 14, 2, 2));
-		g.setColor(new Color(100, 100, 100));
-		g.draw(new RoundRectangle2D.Double(4, 4, 14, 14, 2, 2));
+		g.fill(new RoundRectangle2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4, 3, 3));
+		g.setColor(new Color(80, 80, 80)); // Darker gray for better contrast
+		g.draw(new RoundRectangle2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4, 3, 3));
 
-		// Disk details
-		g.setColor(new Color(100, 100, 100));
-		g.fill(new Rectangle2D.Double(7, 5, 8, 4)); // Upper bar
-		g.fill(new Rectangle2D.Double(6, 10, 10, 6)); // Lower bar
+		// Disk details - more prominent
+		g.setColor(new Color(80, 80, 80));
+		g.fill(new Rectangle2D.Double(PADDING + 5, PADDING + 5, INNER_SIZE - 8, 3)); // Upper bar
+		g.fill(new Rectangle2D.Double(PADDING + 4, PADDING + 11, INNER_SIZE - 6, 5)); // Lower bar
 
 		// Disk hole
 		g.setColor(Color.WHITE);
-		g.fill(new Ellipse2D.Double(9, 8, 4, 4));
+		g.fill(new Ellipse2D.Double(PADDING + 8, PADDING + 8, 4, 4));
 
-		// Save arrow
-		g.setColor(new Color(100, 100, 100));
-		g.draw(new Line2D.Double(10, 7, 10, 11)); // Vertical
-		g.draw(new Line2D.Double(10, 11, 12, 11)); // Horizontal right
-		g.draw(new Line2D.Double(10, 11, 8, 11));  // Horizontal left
-		g.draw(new Line2D.Double(10, 11, 9, 12));  // Diagonal up-left
-		g.draw(new Line2D.Double(10, 11, 11, 12)); // Diagonal up-right
+		// Save arrow - more prominent
+		g.setColor(new Color(80, 80, 80));
+		int centerX = PADDING + INNER_SIZE / 2;
+		int arrowBaseY = PADDING + 7;
+		int arrowTipY = PADDING + 4;
+		g.draw(new Line2D.Double(centerX, arrowBaseY, centerX, arrowTipY)); // Vertical
+		g.draw(new Line2D.Double(centerX, arrowTipY, centerX + 3, arrowTipY + 3)); // Right diagonal
+		g.draw(new Line2D.Double(centerX, arrowTipY, centerX - 3, arrowTipY + 3)); // Left diagonal
+		g.draw(new Line2D.Double(centerX - 2, arrowBaseY, centerX + 2, arrowBaseY)); // Base
 	}
 
 	/**
-	 * Draws a "copy" icon: two overlapping documents.
+	 * Draws a "copy" icon: two clearly overlapping documents.
 	 */
 	private static void drawCopyIcon(Graphics2D g) {
-		// Shadow document (behind)
-		g.setColor(new Color(240, 240, 240));
-		g.fill(new RoundRectangle2D.Double(4, 6, 12, 12, 2, 2));
+		// Shadow document (behind) - offset and lighter
+		g.setColor(new Color(245, 245, 245));
+		g.fill(new RoundRectangle2D.Double(PADDING + 2, PADDING + 5, INNER_SIZE - 4, INNER_SIZE - 4, 2, 2));
 
 		// Main document (front)
 		g.setColor(Color.WHITE);
-		g.fill(new RoundRectangle2D.Double(6, 4, 12, 12, 2, 2));
+		g.fill(new RoundRectangle2D.Double(PADDING + 4, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4, 2, 2));
 
 		// Borders
 		g.setColor(new Color(80, 80, 80));
-		g.draw(new RoundRectangle2D.Double(4, 6, 12, 12, 2, 2));
-		g.draw(new RoundRectangle2D.Double(6, 4, 12, 12, 2, 2));
+		g.draw(new RoundRectangle2D.Double(PADDING + 2, PADDING + 5, INNER_SIZE - 4, INNER_SIZE - 4, 2, 2));
+		g.draw(new RoundRectangle2D.Double(PADDING + 4, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4, 2, 2));
 
-		// Document lines
+		// Document lines - more visible
 		g.setColor(new Color(80, 80, 80));
-		g.drawLine(8, 6, 12, 6);
-		g.drawLine(8, 8, 12, 8);
-		g.drawLine(8, 10, 12, 10);
-		g.drawLine(8, 12, 12, 12);
-		g.drawLine(8, 14, 12, 14);
+		int docLeft = PADDING + 6;
+		int docWidth = INNER_SIZE - 10;
+		g.drawLine(docLeft, PADDING + 4, docLeft + docWidth, PADDING + 4);
+		g.drawLine(docLeft, PADDING + 7, docLeft + docWidth, PADDING + 7);
+		g.drawLine(docLeft, PADDING + 10, docLeft + docWidth, PADDING + 10);
+		g.drawLine(docLeft, PADDING + 13, docLeft + docWidth, PADDING + 13);
 
-		g.drawLine(6, 8, 10, 8);
-		g.drawLine(6, 10, 10, 10);
-		g.drawLine(6, 12, 10, 12);
-		g.drawLine(6, 14, 10, 14);
+		g.drawLine(PADDING + 5, PADDING + 6, PADDING + 5 + docWidth/3, PADDING + 6);
+		g.drawLine(PADDING + 5, PADDING + 9, PADDING + 5 + docWidth/3, PADDING + 9);
+		g.drawLine(PADDING + 5, PADDING + 12, PADDING + 5 + docWidth/3, PADDING + 12);
 	}
 
 	/**
-	 * Draws a "paste" icon: a clipboard with document.
+	 * Draws a "paste" icon: a clipboard with clear document.
 	 */
 	private static void drawPasteIcon(Graphics2D g) {
 		// Clipboard base
-		g.setColor(new Color(220, 200, 160));
-		g.fill(new RoundRectangle2D.Double(4, 4, 14, 14, 2, 2));
+		g.setColor(new Color(230, 200, 150)); // Brighter beige
+		g.fill(new RoundRectangle2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4, 2, 2));
 
 		// Clipboard grip
-		g.setColor(new Color(180, 160, 120));
-		g.fill(new Rectangle2D.Double(8, 2, 6, 2));
+		g.setColor(new Color(200, 160, 100));
+		g.fill(new Rectangle2D.Double(PADDING + 8, PADDING, INNER_SIZE - 14, 3));
 
 		// Clipboard border
-		g.setColor(new Color(120, 100, 60));
-		g.draw(new RoundRectangle2D.Double(4, 4, 14, 14, 2, 2));
-		g.draw(new Rectangle2D.Double(8, 2, 6, 2));
+		g.setColor(new Color(150, 100, 50)); // Darker for border
+		g.draw(new RoundRectangle2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4, 2, 2));
+		g.draw(new Rectangle2D.Double(PADDING + 8, PADDING, INNER_SIZE - 14, 3));
 
 		// Document on clipboard
 		g.setColor(Color.WHITE);
-		g.fill(new Rectangle2D.Double(6, 6, 10, 10));
-		g.setColor(new Color(160, 140, 100));
-		g.draw(new Rectangle2D.Double(6, 6, 10, 10));
-		g.drawLine(8, 8, 12, 8);
-		g.drawLine(8, 10, 12, 10);
-		g.drawLine(8, 12, 12, 12);
+		g.fill(new Rectangle2D.Double(PADDING + 4, PADDING + 4, INNER_SIZE - 8, INNER_SIZE - 8));
+		g.setColor(new Color(180, 150, 100));
+		g.draw(new Rectangle2D.Double(PADDING + 4, PADDING + 4, INNER_SIZE - 8, INNER_SIZE - 8));
+		g.drawLine(PADDING + 6, PADDING + 6, PADDING + INNER_SIZE - 6, PADDING + 6);
+		g.drawLine(PADDING + 6, PADDING + 9, PADDING + INNER_SIZE - 6, PADDING + 9);
+		g.drawLine(PADDING + 6, PADDING + 12, PADDING + INNER_SIZE - 6, PADDING + 12);
 	}
 
 	/**
-	 * Draws a "cut" icon: scissors.
+	 * Draws a "cut" icon: clear scissors.
 	 */
 	private static void drawCutIcon(Graphics2D g) {
 		// Left scissor handle
-		g.setColor(new Color(200, 50, 50));
-		g.draw(new Line2D.Double(5, 5, 9, 9));
-		g.draw(new Line2D.Double(9, 9, 13, 5));
+		g.setColor(new Color(180, 30, 30)); // Brighter red
+		g.draw(new Line2D.Double(PADDING + 3, PADDING + 3, PADDING + 7, PADDING + 7));
+		g.draw(new Line2D.Double(PADDING + 7, PADDING + 7, PADDING + 11, PADDING + 3));
 
 		// Right scissor handle
-		g.draw(new Line2D.Double(9, 5, 13, 9));
-		g.draw(new Line2D.Double(13, 9, 17, 5));
+		g.draw(new Line2D.Double(PADDING + 7, PADDING + 3, PADDING + 11, PADDING + 7));
+		g.draw(new Line2D.Double(PADDING + 11, PADDING + 7, PADDING + 15, PADDING + 3));
 
 		// Pivot point
-		g.setColor(new Color(180, 40, 40));
-		g.fill(new Ellipse2D.Double(10, 8, 4, 4));
+		g.setColor(new Color(150, 20, 20)); // Darker red
+		g.fill(new Ellipse2D.Double(PADDING + 8, PADDING + 6, 4, 4));
 
 		// Blades
-		g.setColor(new Color(200, 50, 50));
-		g.draw(new Line2D.Double(8, 9, 6, 13));
-		g.draw(new Line2D.Double(6, 13, 4, 15));
-		g.draw(new Line2D.Double(12, 9, 14, 13));
-		g.draw(new Line2D.Double(14, 13, 16, 15));
+		g.setColor(new Color(180, 30, 30));
+		g.draw(new Line2D.Double(PADDING + 6, PADDING + 7, PADDING + 4, PADDING + 11));
+		g.draw(new Line2D.Double(PADDING + 4, PADDING + 11, PADDING + 3, PADDING + 13));
+		g.draw(new Line2D.Double(PADDING + 10, PADDING + 7, PADDING + 12, PADDING + 11));
+		g.draw(new Line2D.Double(PADDING + 12, PADDING + 11, PADDING + 13, PADDING + 13));
 
 		// Blade details
-		g.setColor(new Color(180, 40, 40));
-		g.draw(new Line2D.Double(5, 12, 7, 12));
-		g.draw(new Line2D.Double(15, 12, 17, 12));
+		g.setColor(new Color(150, 20, 20));
+		g.draw(new Line2D.Double(PADDING + 4, PADDING + 10, PADDING + 6, PADDING + 10));
+		g.draw(new Line2D.Double(PADDING + 12, PADDING + 10, PADDING + 14, PADDING + 10));
 	}
 
 	/**
-	 * Draws a "compile" icon: gear/cog with play triangle.
+	 * Draws a "compile" icon: gear with clear play triangle.
 	 */
 	private static void drawCompileIcon(Graphics2D g) {
 		// Gear outer circle
-		g.setColor(new Color(50, 180, 50));
-		g.fill(new Ellipse2D.Double(4, 4, 14, 14));
+		g.setColor(new Color(40, 160, 40)); // Brighter green
+		g.fill(new Ellipse2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4));
 
 		// Gear inner circle (hole)
 		g.setColor(Color.WHITE);
-		g.fill(new Ellipse2D.Double(8, 8, 6, 6));
+		g.fill(new Ellipse2D.Double(PADDING + 6, PADDING + 6, INNER_SIZE - 12, INNER_SIZE - 12));
 
-		// Gear teeth (simple version)
-		g.setColor(new Color(50, 180, 50));
-		g.fill(new Rectangle2D.Double(6, 3, 2, 4));   // Top
-		g.fill(new Rectangle2D.Double(14, 6, 2, 2));  // Right-top
-		g.fill(new Rectangle2D.Double(14, 10, 2, 2)); // Right-bottom
-		g.fill(new Rectangle2D.Double(6, 15, 2, 4));  // Bottom
-		g.fill(new Rectangle2D.Double(2, 6, 2, 2));   // Left-top
-		g.fill(new Rectangle2D.Double(2, 10, 2, 2));  // Left-bottom
+		// Gear teeth - more prominent
+		g.setColor(new Color(40, 160, 40));
+		int gearCenterX = PADDING + INNER_SIZE / 2;
+		int gearCenterY = PADDING + INNER_SIZE / 2;
+		int gearRadius = (INNER_SIZE - 4) / 2;
+		int innerRadius = (INNER_SIZE - 12) / 2;
+		int toothLength = 2;
 
-		// Play triangle
+		// Draw 6 teeth
+		for (int i = 0; i < 6; i++) {
+			double angle = i * Math.PI / 3;
+			int x1 = (int) (gearCenterX + (gearRadius - toothLength) * Math.cos(angle));
+			int y1 = (int) (gearCenterY + (gearRadius - toothLength) * Math.sin(angle));
+			int x2 = (int) (gearCenterX + gearRadius * Math.cos(angle));
+			int y2 = (int) (gearCenterY + gearRadius * Math.sin(angle));
+			g.draw(new Line2D.Double(x1, y1, x2, y2));
+		}
+
+		// Play triangle - more prominent
 		g.setColor(Color.WHITE);
+		int triangleX1 = PADDING + 7;
+		int triangleY1 = PADDING + 5;
+		int triangleX2 = PADDING + 7;
+		int triangleY2 = PADDING + INNER_SIZE - 5;
+		int triangleX3 = PADDING + INNER_SIZE - 5;
+		int triangleY3 = PADDING + INNER_SIZE / 2;
 		Path2D triangle = new Path2D.Double();
-		triangle.moveTo(9, 7);
-		triangle.lineTo(9, 13);
-		triangle.lineTo(13, 10);
+		triangle.moveTo(triangleX1, triangleY1);
+		triangle.lineTo(triangleX2, triangleY2);
+		triangle.lineTo(triangleX3, triangleY3);
 		triangle.closePath();
 		g.fill(triangle);
 
 		// Gear border
-		g.setColor(new Color(30, 140, 30));
-		g.draw(new Ellipse2D.Double(4, 4, 14, 14));
-		g.draw(new Ellipse2D.Double(8, 8, 6, 6));
+		g.setColor(new Color(20, 120, 20)); // Darker green
+		g.draw(new Ellipse2D.Double(PADDING + 2, PADDING + 2, INNER_SIZE - 4, INNER_SIZE - 4));
+		g.draw(new Ellipse2D.Double(PADDING + 6, PADDING + 6, INNER_SIZE - 12, INNER_SIZE - 12));
 	}
 
 	/**
-	 * Draws a "team" icon: two people silhouettes.
+	 * Draws a "team" icon: two clear people silhouettes.
 	 */
 	private static void drawTeamIcon(Graphics2D g) {
 		// First person (left)
-		g.setColor(new Color(100, 100, 200));
-		g.fill(new Ellipse2D.Double(4, 4, 6, 6)); // Head
-		g.fill(new Rectangle2D.Double(6, 10, 2, 8)); // Body
+		g.setColor(new Color(60, 60, 180)); // Brighter blue
+		g.fill(new Ellipse2D.Double(PADDING + 2, PADDING + 2, 6, 6)); // Head
+		g.fill(new Rectangle2D.Double(PADDING + 5, PADDING + 9, 3, 8)); // Body
 
 		// Second person (right)
-		g.fill(new Ellipse2D.Double(12, 4, 6, 6)); // Head
-		g.fill(new Rectangle2D.Double(14, 10, 2, 8)); // Body
+		g.fill(new Ellipse2D.Double(PADDING + INNER_SIZE - 8, PADDING + 2, 6, 6)); // Head
+		g.fill(new Rectangle2D.Double(PADDING + INNER_SIZE - 5, PADDING + 9, 3, 8)); // Body
 
-		// Connection line (representing teamwork)
-		g.setColor(new Color(80, 80, 180));
-		g.draw(new Line2D.Double(8, 14, 16, 14));
+		// Connection line (representing teamwork) - more prominent
+		g.setColor(new Color(40, 40, 150));
+		g.setStroke(new BasicStroke(2.5f));
+		g.draw(new Line2D.Double(PADDING + 5, PADDING + 13, PADDING + INNER_SIZE - 5, PADDING + 13));
+		g.setStroke(new BasicStroke(2.0f)); // Reset to default stroke
 
 		// Outlines
-		g.setColor(new Color(60, 60, 160));
-		g.draw(new Ellipse2D.Double(4, 4, 6, 6));
-		g.draw(new Rectangle2D.Double(6, 10, 2, 8));
-		g.draw(new Ellipse2D.Double(12, 4, 6, 6));
-		g.draw(new Rectangle2D.Double(14, 10, 2, 8));
+		g.setColor(new Color(30, 30, 120)); // Darker blue for outline
+		g.draw(new Ellipse2D.Double(PADDING + 2, PADDING + 2, 6, 6));
+		g.draw(new Rectangle2D.Double(PADDING + 5, PADDING + 9, 3, 8));
+		g.draw(new Ellipse2D.Double(PADDING + INNER_SIZE - 8, PADDING + 2, 6, 6));
+		g.draw(new Rectangle2D.Double(PADDING + INNER_SIZE - 5, PADDING + 9, 3, 8));
 	}
 }
