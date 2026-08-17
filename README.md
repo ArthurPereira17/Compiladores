@@ -16,9 +16,3 @@ ESTRUTURA:
   src/compilador/IconFactory.java      -> ícones dos botões, gerados via código
   src/compilador/CompilerInterface.java-> janela principal (toda a lógica da interface)
   dist/compilador.jar                  -> executável pronto
-
-IMPORTANTE ANTES DE ENTREGAR:
-  - Edite a lista EQUIPE em CompilerInterface.java com os nomes reais
-    dos integrantes da equipe (usada no botão "equipe").
-  - Renomeie a pasta/arquivo compactado para "interface" + número da equipe,
-    conforme pede o enunciado.
