@@ -101,21 +101,21 @@ public class CompilerInterface extends JFrame {
 
 		Dimension tamanhoBotao = new Dimension(140, 56);
 
-		painel.add(criarBotao("Novo", "Novo [CTRL + N]", tamanhoBotao, e -> acaoNovo()));
+		painel.add(criarBotao("novo", "novo [ctrl-n]", tamanhoBotao, e -> acaoNovo()));
 		painel.add(espaco());
-		painel.add(criarBotao("Abrir", "Abrir [CTRL + O]", tamanhoBotao, e -> acaoAbrir()));
+		painel.add(criarBotao("abrir", "abrir [ctrl-o]", tamanhoBotao, e -> acaoAbrir()));
 		painel.add(espaco());
-		painel.add(criarBotao("Salvar", "Salvar [CTRL + S]", tamanhoBotao, e -> acaoSalvar()));
+		painel.add(criarBotao("salvar", "salvar [ctrl-s]", tamanhoBotao, e -> acaoSalvar()));
 		painel.add(espaco());
-		painel.add(criarBotao("Copiar", "Copiar [CTRL + C]", tamanhoBotao, e -> editor.copy()));
+		painel.add(criarBotao("copiar", "copiar [ctrl-c]", tamanhoBotao, e -> editor.copy()));
 		painel.add(espaco());
-		painel.add(criarBotao("Colar", "Colar [CTRL + V]", tamanhoBotao, e -> editor.paste()));
+		painel.add(criarBotao("colar", "colar [ctrl-v]", tamanhoBotao, e -> editor.paste()));
 		painel.add(espaco());
-		painel.add(criarBotao("Recortar", "Recortar [CTRL + X]", tamanhoBotao, e -> editor.cut()));
+		painel.add(criarBotao("recortar", "recortar [ctrl-x]", tamanhoBotao, e -> editor.cut()));
 		painel.add(espaco());
-		painel.add(criarBotao("Compilar", "Compilar [F7]", tamanhoBotao, e -> acaoCompilar()));
+		painel.add(criarBotao("compilar", "compilar [F7]", tamanhoBotao, e -> acaoCompilar()));
 		painel.add(espaco());
-		painel.add(criarBotao("Equipe", "Equipe [F1]", tamanhoBotao, e -> acaoEquipe()));
+		painel.add(criarBotao("equipe", "equipe [F1]", tamanhoBotao, e -> acaoEquipe()));
 
 		painel.add(javax.swing.Box.createVerticalGlue());
 		return painel;
