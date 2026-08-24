@@ -8,8 +8,11 @@ COMO RODAR:
      associação de arquivos .jar estiver configurada)
 
 COMO COMPILAR A PARTIR DO CÓDIGO-FONTE:
+
+```bash
   javac -d build src/compilador/CompilerInterface.java
   jar cfe compilador.jar compilador.CompilerInterface -C build .
+```
 
 ESTRUTURA:
   src/compilador/NumberedBorder.java   -> borda com numeração de linhas (fornecida)
