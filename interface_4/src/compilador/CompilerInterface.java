@@ -36,8 +36,6 @@ public class CompilerInterface extends JFrame {
 			"Ryan Henrique Vieira"
 	};
 
-	private static final String MSG_COMPILAR = "compilação de programas ainda não foi implementada";
-
 	private final JTextArea editor;
 	private final JTextArea areaMensagens;
 	private final JLabel barraStatus;
@@ -227,7 +225,115 @@ public class CompilerInterface extends JFrame {
 	}
 
 	private void acaoCompilar() {
-		areaMensagens.setText(MSG_COMPILAR);
+		String fonte = editor.getText();
+		Lexico lexico = new Lexico(fonte);
+		StringBuilder saida = new StringBuilder();
+		saida.append(String.format("%-8s%-20s%s%n", "linha", "classe", "lexema"));
+
+		try {
+			Token t;
+			while ((t = lexico.nextToken()) != null) {
+
+				// palavra que segue o padrão de palavra reservada mas não é
+				// nenhuma das 12 palavras-chave da linguagem -> erro léxico
+				if (t.getId() == Constants.t_Preservada) {
+					int linha = calcularLinha(fonte, t.getPosition());
+
+					// caso especial: identificador malformado (ex.: "i_1", "f_", "s_@").
+					// como "i_"/"f_"/"s_"/"b_" exigem uma LETRA logo em seguida, quando o
+					// caractere após o prefixo não é uma letra o autômato recua e devolve
+					// só a letra solta (i/f/s/b) como se fosse uma palavra reservada de
+					// 1 caractere. Detectamos esse padrão aqui para reportar corretamente
+					// como identificador inválido, e não como palavra reservada inválida.
+					if (t.getLexeme().length() == 1 && "ifsb".contains(t.getLexeme())) {
+						int proxPos = t.getPosition() + 1;
+						if (proxPos < fonte.length() && fonte.charAt(proxPos) == '_') {
+							areaMensagens.setText("linha " + linha + ": identificador inválido");
+							return;
+						}
+					}
+
+					areaMensagens.setText("linha " + linha + ": " + t.getLexeme() + " palavra reservada inválida");
+					return;
+				}
+
+				int linha = calcularLinha(fonte, t.getPosition());
+				String classe = classeDoToken(t.getId());
+				saida.append(String.format("%-8d%-20s%s%n", linha, classe, t.getLexeme()));
+			}
+		} catch (LexicalError e) {
+			areaMensagens.setText(mensagemDeErroLexico(e, fonte));
+			return;
+		}
+
+		saida.append("\nprograma compilado com sucesso");
+		areaMensagens.setText(saida.toString());
+	}
+
+	private String classeDoToken(int id) {
+		if (id == Constants.t_idInt || id == Constants.t_idFloat
+				|| id == Constants.t_idString || id == Constants.t_idBool) {
+			return "identificador";
+		}
+		if (id == Constants.t_constanteInt) {
+			return "constante_int";
+		}
+		if (id == Constants.t_constanteFloat) {
+			return "constante_float";
+		}
+		if (id == Constants.t_constanteString) {
+			return "constante_string";
+		}
+		if (id >= Constants.t_and && id <= Constants.t_while) {
+			return "palavra reservada";
+		}
+		return "símbolo especial";
+	}
+
+	private String mensagemDeErroLexico(LexicalError e, String fonte) {
+		int pos = e.getPosition();
+		int linha = calcularLinha(fonte, pos);
+		String msg = e.getMessage() == null ? "" : e.getMessage();
+
+		if (msg.contains("constanteString")) {
+			return "linha " + linha + ": constante_string inválida";
+		}
+		if (msg.contains("idInt") || msg.contains("idFloat")
+				|| msg.contains("idString") || msg.contains("idBool")) {
+			return "linha " + linha + ": identificador inválido";
+		}
+		if (msg.contains("ignorar")) {
+			// erro dentro do comentário de bloco (não finalizado ou malformado);
+			// a posição já aponta para o início do comentário, conforme exigido
+			return "linha " + linha + ": comentário inválido ou não finalizado";
+		}
+		if (msg.contains("Preservada")) {
+			String palavra = capturarSequenciaDeLetras(fonte, pos);
+			return "linha " + linha + ": " + palavra + " palavra reservada inválida";
+		}
+
+		// símbolo inválido (caractere que não faz parte da linguagem)
+		String simbolo = pos >= 0 && pos < fonte.length() ? String.valueOf(fonte.charAt(pos)) : "";
+		return "linha " + linha + ": " + simbolo + " símbolo inválido";
+	}
+
+	private String capturarSequenciaDeLetras(String fonte, int inicio) {
+		int fim = inicio;
+		while (fim < fonte.length() && Character.isLetter(fonte.charAt(fim))) {
+			fim++;
+		}
+		return fonte.substring(inicio, fim);
+	}
+
+	private int calcularLinha(String fonte, int posicao) {
+		int linha = 1;
+		int limite = Math.min(posicao, fonte.length());
+		for (int i = 0; i < limite; i++) {
+			if (fonte.charAt(i) == '\n') {
+				linha++;
+			}
+		}
+		return linha;
 	}
 
 	private void acaoEquipe() {
