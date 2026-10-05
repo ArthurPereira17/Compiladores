@@ -1,0 +1,72 @@
+#Options
+GenerateScanner = true
+GenerateParser = false
+Language = Java
+ScannerName = Lexico
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = String
+#RegularDefinitions
+Letra : [A-Za-z]
+dig : [0-9]
+bloco : "$_" [^$_]* "_$"
+#Tokens
+Preservada:! [a-z]+ ([A-Z][a-z]+)*
+
+//Identificadores
+//id_int:
+idInt : "i_" {Letra} ({Letra}|{dig})*
+//id_float
+idFloat : "f_" {Letra} ({Letra}|{dig})*
+//id_str
+idString : "s_" {Letra} ({Letra}|{dig})*
+//id_bool
+idBool : "b_" {Letra} ({Letra}|{dig})*
+
+//Constantes
+//cte_int
+constanteInt : {dig}+
+//cte_float
+constanteFloat : {dig}+ "," {dig}+
+//cte_str
+constanteString : \" [^\"\n\\]* \"
+
+//comentário de bloco - ignorar
+:! {bloco}
+
+//palavras reservadas
+and = Preservada: "and"
+false = Preservada: "false"
+if = Preservada: "if"
+in = Preservada: "in"
+isfalsedo = Preservada: "isFalseDo"
+istruedo = Preservada: "isTrueDo"
+module = Preservada: "module"
+not = Preservada: "not"
+or = Preservada: "or"
+out = Preservada: "out"
+true = Preservada: "true"
+while = Preservada: "while"
+
+//simbolos especiais
+","
+":"
+";"
+"["
+"]"
+"("
+")"
+"{"
+"}"
+"+" 
+"-" 
+"*" 
+"/" 
+"<-" 
+"=" 
+"<>"
+"<" 
+">"
+
+//reconhecer e ignorar formatação
+:[\n\s\t]
