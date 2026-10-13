@@ -1,0 +1,214 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = String
+Parser = LL
+#RegularDefinitions
+Letra : [A-Za-z]
+dig : [0-9]
+bloco : "$_" [^$_]* "_$"
+#Tokens
+Preservada:! [a-z]+ ([A-Z][a-z]+)*
+
+//Identificadores
+//id_int:
+idInt :! "i_" {Letra} ({Letra}|{dig})*
+//id_float
+idFloat :! "f_" {Letra} ({Letra}|{dig})*
+//id_str
+idString :! "s_" {Letra} ({Letra}|{dig})*
+//id_bool
+idBool :! "b_" {Letra} ({Letra}|{dig})*
+
+//Constantes
+//cte_int
+constanteInt :! {dig}+
+//cte_float
+constanteFloat :! {dig}+ "," {dig}+
+//cte_str
+constanteString :! \" [^\"\n\\]* \"
+
+//coment√°rio de bloco - ignorar
+:! {bloco}
+
+//palavras reservadas
+and = Preservada: "and"
+false = Preservada: "false"
+if = Preservada: "if"
+in = Preservada: "in"
+isfalsedo = Preservada: "isFalseDo"
+istruedo = Preservada: "isTrueDo"
+module = Preservada: "module"
+not = Preservada: "not"
+or = Preservada: "or"
+out = Preservada: "out"
+true = Preservada: "true"
+while = Preservada: "while"
+
+//simbolos especiais
+","
+"["
+"]"
+"("
+")"
+"{"
+"}"
+"+" 
+"-" 
+"*" 
+"/" 
+"<-" 
+"=" 
+"<>"
+"<" 
+">"
+
+//reconhecer e ignorar formata√ß√£o
+:[\n\s\t]
+
+#NonTerminals
+<forma_geral>
+<forma_geral1>
+
+<expressao>
+
+
+
+<identificador>
+
+<lista_cmd>
+<lista_cmd1>
+<cmd_repeticao>
+<cmd_saida>
+<cmd_entrada>
+<cmd_atribuicao>
+<cmd_atribuicao1>
+
+<cmd_selecao>
+<cmd_selecao1>
+<cmd_selecao2>
+<cmd_selecao3>
+
+<lista_identificadores>
+<lista_identificadores1>
+<lista_identificadores2>
+
+<booleanState>
+<comando>
+
+<lista_Vars>
+<lista_Vars1>
+<lista_expressoes>
+<lista_expressoes1>
+
+<dec_Vars>
+<dec_Vars1>
+<termo_logico>
+
+<expressao_>
+
+<relacional>
+<relacional_>
+<operador_relacional>
+
+<aritmetica>
+<aritmetica_>
+
+<termo_aritmetico_>
+<termo_aritmetico>
+
+<identificador_expressao>
+<fator>
+<vetor>
+#Grammar
+//<forma_geral> ::= module <dec_Vars> "{" <lista_cmd> "}" | module "{" <lista_cmd> "}";
+<forma_geral> ::= module <forma_geral1> "{" <lista_cmd> "}";
+<forma_geral1> ::= <dec_Vars> | Ó;
+ 
+//<lista_expressoes> ::= <expressao> "," <lista_expressoes> | <expressao>;
+<lista_expressoes> ::= <expressao> <lista_expressoes1>;
+<lista_expressoes1> ::= "," <lista_expressoes> | Ó;
+
+<identificador> ::= idInt | idFloat | idString | idBool;
+
+//<lista_identificadores> ::= <identificador> "," <lista_identificadores>
+//| <identificador>
+//| <identificador> "[" <expressao>"]" 
+//| <identificador> "[" <expressao>"]" "," <lista_identificadores>;
+<lista_identificadores> ::= <identificador> <lista_identificadores1> <lista_identificadores2>;
+<lista_identificadores1> ::= "["<expressao> "]" | Ó;
+<lista_identificadores2> ::= "," <lista_identificadores> | Ó;
+
+<booleanState> ::= isfalsedo | istruedo;
+
+//<lista_cmd> ::=  <comando> <lista_cmd> | <comando>;
+<lista_cmd> ::= <comando> <lista_cmd1>;
+<lista_cmd1> ::= <lista_cmd> | Ó;
+
+<comando> ::= <cmd_repeticao>|<cmd_selecao>|<cmd_saida>|<cmd_entrada>|<cmd_atribuicao>;
+<cmd_repeticao> ::= while "(" <expressao> ")" <booleanState> "{" <lista_cmd> "}";
+
+//<cmd_selecao> ::= if "(" <expressao>")" istruedo "{"<lista_cmd>"}" 
+//| if "(" <expressao>")" istruedo "{"<lista_cmd>"}" isfalsedo "{"<lista_cmd>"}"
+//| if "(" <expressao>")" isfalsedo "{"<lista_cmd>"}" 
+//| if "(" <expressao>")" isfalsedo "{"<lista_cmd>"}" istruedo "{"<lista_cmd>"}";
+<cmd_selecao> ::= if "(" <expressao> ")" <cmd_selecao1>;
+<cmd_selecao1> ::= istruedo "{" <lista_cmd> "}" <cmd_selecao2> | isfalsedo "{"<lista_cmd>"}"<cmd_selecao3>;
+<cmd_selecao2> ::= isfalsedo "{" <lista_cmd> "}" | Ó;
+<cmd_selecao3> ::= istruedo "{" <lista_cmd> "}" | Ó;
+
+<cmd_saida> ::= out "(" <lista_expressoes> ")";
+<cmd_entrada> ::= in "(" <lista_identificadores> ")";
+
+//<cmd_atribuicao> ::= <identificador> "<-" <expressao> | <identificador>"["<expressao>"]" "<-" <expressao>;
+<cmd_atribuicao> ::= <identificador> <cmd_atribuicao1>;
+<cmd_atribuicao1> ::= "<-" <expressao> | "["<expressao>"]" "<-" <expressao>;
+
+//<lista_Vars> ::= <identificador> | <identificador> "[" constanteInt "]";
+<lista_Vars> ::= <identificador> <lista_Vars1>;
+<lista_Vars1> ::= "[" constanteInt "]" | Ó;
+
+//<dec_Vars> ::= <lista_Vars> "," <dec_Vars> | <lista_Vars>;
+<dec_Vars> ::= <lista_Vars> <dec_Vars1>;
+<dec_Vars1> ::= "," <dec_Vars> | Ó;
+
+<expressao> ::= <termo_logico> <expressao_> ;
+
+<expressao_> ::= Ó | and <termo_logico> <expressao_> | or <termo_logico> <expressao_> ;
+
+<termo_logico> ::= <relacional> | true | false | not <termo_logico> ;
+
+<relacional> ::= <aritmetica> <relacional_> ;
+<relacional_> ::= Ó | <operador_relacional> <aritmetica> ;
+
+<operador_relacional>::= "=" | "<>" | "<" | ">" ;
+
+<aritmetica> ::= <termo_aritmetico> <aritmetica_> ;
+<aritmetica_> ::= Ó | "+" <termo_aritmetico> <aritmetica_> |
+ "-" <termo_aritmetico> <aritmetica_> ;
+
+<termo_aritmetico> ::= <fator> <termo_aritmetico_> ;
+<termo_aritmetico_> ::= Ó | "*" <fator> <termo_aritmetico_> | "/" <fator> <termo_aritmetico_> ;
+
+<fator> ::= <identificador_expressao> <vetor> |
+ constanteInt |
+ constanteFloat |
+ constanteString |
+ "(" <expressao> ")" |
+ "+" <fator> |
+ "-" <fator> ;
+
+<identificador_expressao>::= idInt | idFloat | idString | idBool;
+<vetor> ::= Ó | "[" <expressao> "]" ; 
+
+
+
+
+
+
